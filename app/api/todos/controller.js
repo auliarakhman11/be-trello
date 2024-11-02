@@ -37,7 +37,8 @@ module.exports = {
         try {
             const {id} = req.params;
             const result = await Todo.findOne({
-                where : {id : id}
+                where : {id : id},
+                attributes: ['id', 'name'],
             });
 
             res.status(200).json({
