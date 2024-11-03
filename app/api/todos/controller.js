@@ -39,6 +39,10 @@ module.exports = {
             const result = await Todo.findOne({
                 where : {id : id},
                 attributes: ['id', 'name'],
+                include: {
+                    model: Item,
+                    attributes: ['id', 'name','TodoId'],
+                  },
             });
 
             res.status(200).json({
