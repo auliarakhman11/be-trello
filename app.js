@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const todoRouter = require("./app/api/todos/router");
+const itemRouter = require("./app/api/items/router");
 
 const URL = "/api/v1";
 const app = express();
@@ -22,6 +23,7 @@ app.get('/', function (req, res) {
 });
 
 app.use(`${URL}`, todoRouter);
+app.use(`${URL}`, itemRouter);
 
 //handle errors
 app.use(function (req, res, next) {
