@@ -1,5 +1,5 @@
 const { body, validationResult, param } = require('express-validator');
-const {Todo} = require('../../db/models');
+const {Todo, Item} = require('../../db/models');
 
 module.exports = {
     validateCreate : [
@@ -12,7 +12,7 @@ module.exports = {
             if (checking === null) {
                 return Promise.reject();
             }
-        }).withMessage("id tidak ada di database"),
+        }).withMessage("TodoId tidak ada di database"),
         (req, res, next) => {
             const error = validationResult(req);
             if (!error.isEmpty()) {
@@ -31,7 +31,7 @@ module.exports = {
         .notEmpty().withMessage('id tidak boleh kosong')
         .bail().isNumeric().withMessage('id harus bertype integer')
         .bail().custom(async (value, {req}) => {
-            const checking = await Todo.findOne({where: {id : value} });
+            const checking = await Item.findOne({where: {id : value} });
             if (checking === null) {
                 return Promise.reject();
             }
@@ -55,12 +55,44 @@ module.exports = {
         .notEmpty().withMessage('id tidak boleh kosong')
         .bail().isNumeric().withMessage('id harus bertype integer')
         .bail().custom(async (value, {req}) => {
-            const checking = await Todo.findOne({where: {id : value} });
+            const checking = await Item.findOne({where: {id : value} });
             if (checking === null) {
                 return Promise.reject();
             }
         }).withMessage("id tidak ada di database"),
         body('name').notEmpty().withMessage('Nama tidak boleh kosong'),
+        (req, res, next) => {
+            const error = validationResult(req);
+            if (!error.isEmpty()) {
+                return res.status(422).json({
+                    message: "error",
+                    error: error.array(),
+                });
+            }
+
+            next();
+          },
+        
+    ],
+
+    validateMove: [
+        param('id')
+        .notEmpty().withMessage('id tidak boleh kosong')
+        .bail().isNumeric().withMessage('id harus bertype integer')
+        .bail().custom(async (value, {req}) => {
+            const checking = await Item.findOne({where: {id : value} });
+            if (checking === null) {
+                return Promise.reject();
+            }
+        }).withMessage("id tidak ada di database"),
+        body('targetTodoId').notEmpty().withMessage('Nama tidak boleh kosong')
+        .bail().isNumeric().withMessage('targetTodoId harus bertype integer')
+        .bail().custom(async (value, {req}) => {
+            const checking = await Todo.findOne({where: {id : value} });
+            if (checking === null) {
+                return Promise.reject();
+            }
+        }).withMessage("targetTodoId tidak ada di database"),
         (req, res, next) => {
             const error = validationResult(req);
             if (!error.isEmpty()) {
