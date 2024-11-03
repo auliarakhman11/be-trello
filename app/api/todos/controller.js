@@ -5,6 +5,9 @@ module.exports = {
         try {
             const result = await Todo.findAll({
                 attributes: ['id', 'name'],
+                order : [
+                    ['id', 'ASC']
+                ],
                 include: {
                     model: Item,
                     attributes: ['id', 'name','TodoId'],
@@ -71,19 +74,42 @@ module.exports = {
         });
     },
 
-    destroy : (req, res, next)=>{
-        const {id} = req.params;
-        Todo.findOne({ where: {id: id} })
-        .then(todo => {
-            todo.destroy().then(()=>{
-                res.status(200).json({
-                    message: 'success',
-                    data: todo,
-                });
+    destroy : async (req, res, next)=>{
+
+        try {
+            const {id} = req.params;
+            await Item.destroy({where : {TodoId : id},});
+            const result = await Todo.destroy({where : {id : id},});
+
+            res.status(200).json({
+                message: 'success',
+                data: result,
             });
-        })
-        .catch((err) => {
+        } catch (err) {
             next(err);
-        });
+        }
+
+        // const {id} = req.params;
+        // Item.findOne({ where: {TodoId: id} })
+        // .then(todo => {
+        //     todo.destroy().then(()=>{
+        //         res.status(200).json({
+        //             message: 'success',
+        //             data: todo,
+        //         });
+        //     });
+        // })
+        // Todo.findOne({ where: {id: id} })
+        // .then(todo => {
+        //     todo.destroy().then(()=>{
+        //         res.status(200).json({
+        //             message: 'success',
+        //             data: todo,
+        //         });
+        //     });
+        // })
+        // .catch((err) => {
+        //     next(err);
+        // });
     },
 }
